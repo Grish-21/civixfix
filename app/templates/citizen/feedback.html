@@ -1,0 +1,176 @@
+{% extends 'base.html' %}
+
+{% block title %}Give Feedback - CivicFix{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb mb-0">
+            <li class="breadcrumb-item"><a href="{{ url_for('citizen.dashboard') }}" class="text-decoration-none">Dashboard</a></li>
+            <li class="breadcrumb-item"><a href="{{ url_for('citizen.my_complaints') }}" class="text-decoration-none">My Complaints</a></li>
+            <li class="breadcrumb-item"><a href="{{ url_for('complaints.detail', complaint_id=complaint.complaint_id) }}" class="text-decoration-none">{{ complaint.complaint_id }}</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Give Feedback</li>
+        </ol>
+    </nav>
+
+    <!-- Page Header -->
+    <div class="text-center mb-4">
+        <div class="rounded-circle bg-warning bg-opacity-10 text-warning d-inline-flex align-items-center justify-content-center mb-2" style="width: 60px; height: 60px;">
+            <i class="fa-solid fa-star fs-3"></i>
+        </div>
+        <h2 class="fw-bold text-dark mb-1">Give Feedback for Complaint {{ complaint.complaint_id }}</h2>
+        <p class="text-muted small">Your feedback helps evaluate service delivery and ensures municipal accountability.</p>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-9 col-lg-7">
+            <!-- Complaint Summary Card -->
+            <div class="card border-0 shadow-sm rounded-3 bg-white mb-4">
+                <div class="card-body p-4 bg-light rounded-3">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <span class="badge bg-primary bg-opacity-10 text-primary font-monospace fs-6 px-3 py-1">
+                            {{ complaint.complaint_id }}
+                        </span>
+                        <span class="badge bg-success">
+                            <i class="fa-solid fa-check me-1"></i>Resolved
+                        </span>
+                    </div>
+                    <h5 class="fw-bold text-dark mb-2">{{ complaint.title }}</h5>
+                    <div class="row g-2 small text-muted">
+                        <div class="col-sm-6">
+                            <i class="fa-solid fa-tag me-1 text-secondary"></i> Category: <strong>{{ complaint.category }}</strong>
+                        </div>
+                        <div class="col-sm-6">
+                            <i class="fa-regular fa-calendar-check me-1 text-success"></i> Resolution Date:
+                            <strong>
+                                {% if complaint.resolved_at %}
+                                    {{ complaint.resolved_at.strftime('%d %b %Y') }}
+                                {% elif complaint.resolution and complaint.resolution.resolved_at %}
+                                    {{ complaint.resolution.resolved_at.strftime('%d %b %Y') }}
+                                {% else %}
+                                    Resolved
+                                {% endif %}
+                            </strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Feedback Form Card -->
+            <div class="card border-0 shadow-sm rounded-3 bg-white mb-4">
+                <div class="card-body p-4 p-md-5">
+                    <form method="POST" action="{{ url_for('complaints.feedback', complaint_id=complaint.complaint_id) }}">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                        <!-- Star Rating Section -->
+                        <div class="text-center mb-4">
+                            <label class="form-label fw-bold text-dark fs-5 mb-2">How would you rate the resolution?</label>
+                            <p class="text-muted small mb-3">Please rate your satisfaction from 1 (Poor) to 5 (Excellent) stars.</p>
+
+                            <!-- Star Rating Widget -->
+                            <div class="star-rating d-flex flex-row-reverse justify-content-center align-items-center gap-2 mb-2">
+                                <input type="radio" id="star5" name="rating" value="5" required>
+                                <label for="star5" title="5 Stars - Excellent">★</label>
+
+                                <input type="radio" id="star4" name="rating" value="4">
+                                <label for="star4" title="4 Stars - Very Good">★</label>
+
+                                <input type="radio" id="star3" name="rating" value="3">
+                                <label for="star3" title="3 Stars - Good">★</label>
+
+                                <input type="radio" id="star2" name="rating" value="2">
+                                <label for="star2" title="2 Stars - Fair">★</label>
+
+                                <input type="radio" id="star1" name="rating" value="1">
+                                <label for="star1" title="1 Star - Poor">★</label>
+                            </div>
+
+                            <!-- Rating text descriptor updated via script -->
+                            <div id="rating-text" class="fw-semibold text-primary small" style="min-height: 20px;">
+                                Click on a star to select your rating
+                            </div>
+                        </div>
+
+                        <hr class="my-4 text-muted opacity-25">
+
+                        <!-- Comment Textarea -->
+                        <div class="mb-4">
+                            <label for="comment" class="form-label fw-semibold text-dark">
+                                Your Comments & Observations <span class="text-muted fw-normal small">(Optional)</span>
+                            </label>
+                            <textarea class="form-control" id="comment" name="comment" rows="4"
+                                      placeholder="Share any comments regarding the work done, timeliness, or additional suggestions..."></textarea>
+                            <div class="form-text text-muted small">
+                                Your feedback helps our department evaluate contractor performance and field staff.
+                            </div>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg rounded-pill fw-semibold shadow-sm">
+                                <i class="fa-solid fa-paper-plane me-2"></i>Submit Feedback
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Back Link -->
+            <div class="text-center">
+                <a href="{{ url_for('complaints.detail', complaint_id=complaint.complaint_id) }}" class="btn btn-link text-decoration-none text-muted">
+                    <i class="fa-solid fa-arrow-left me-1"></i> Back to Complaint Details
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Star Rating Component Styles */
+.star-rating {
+    direction: rtl; /* Allows right-to-left sibling selector for preceding stars */
+}
+.star-rating input[type="radio"] {
+    display: none;
+}
+.star-rating label {
+    font-size: 2.8rem;
+    color: #dee2e6;
+    cursor: pointer;
+    line-height: 1;
+    transition: color 0.15s ease-in-out, transform 0.15s ease-in-out;
+    user-select: none;
+}
+.star-rating label:hover,
+.star-rating label:hover ~ label,
+.star-rating input[type="radio"]:checked ~ label {
+    color: #ffc107;
+}
+.star-rating label:hover {
+    transform: scale(1.15);
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const ratingLabels = {
+        '1': '1 Star - Poor',
+        '2': '2 Stars - Fair',
+        '3': '3 Stars - Good',
+        '4': '4 Stars - Very Good',
+        '5': '5 Stars - Excellent'
+    };
+    const ratingText = document.getElementById('rating-text');
+    const radios = document.querySelectorAll('input[name="rating"]');
+
+    radios.forEach(radio => {
+        radio.addEventListener('change', function () {
+            if (this.checked) {
+                ratingText.textContent = ratingLabels[this.value] || '';
+            }
+        });
+    });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<!-- ═══════════ HERO SECTION ═══════════ -->
+<section class="hero-section text-white text-center d-flex align-items-center">
+    <div class="container">
+        <h1 class="display-3 fw-bold mb-3">CivicFix</h1>
+        <p class="lead fs-4 mb-2">Your Voice for a Better City</p>
+        <p class="mb-4 mx-auto" style="max-width: 650px;">
+            A centralized platform to report municipal issues, track their resolution, and help build a cleaner, safer, and smarter city.
+        </p>
+        <div class="d-flex gap-3 justify-content-center flex-wrap">
+            {% if current_user.is_authenticated %}
+                <a href="{{ url_for('complaints.submit') }}" class="btn btn-light btn-lg px-4"><i class="fas fa-plus-circle"></i> Report a Complaint</a>
+                <a href="{{ url_for('complaints.track') }}" class="btn btn-outline-light btn-lg px-4"><i class="fas fa-search"></i> Track Your Complaint</a>
+            {% else %}
+                <a href="{{ url_for('auth.login') }}" class="btn btn-light btn-lg px-4"><i class="fas fa-plus-circle"></i> Report a Complaint</a>
+                <a href="{{ url_for('auth.login') }}" class="btn btn-outline-light btn-lg px-4"><i class="fas fa-search"></i> Track Your Complaint</a>
+            {% endif %}
+        </div>
+    </div>
+</section>
+
+<!-- ═══════════ FEATURES ═══════════ -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <h2 class="text-center fw-bold mb-2">Why CivicFix?</h2>
+        <p class="text-center text-muted mb-5">Everything you need to report and track civic issues in one place.</p>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="feature-card card h-100 text-center p-4">
+                    <div class="feature-icon mb-3"><i class="fas fa-edit fa-2x text-primary"></i></div>
+                    <h5 class="fw-bold">Easy Complaint Registration</h5>
+                    <p class="text-muted">Submit complaints quickly with photos and location details through our simple form.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card card h-100 text-center p-4">
+                    <div class="feature-icon mb-3"><i class="fas fa-search fa-2x text-primary"></i></div>
+                    <h5 class="fw-bold">Real-time Tracking</h5>
+                    <p class="text-muted">Track your complaint status at every step with a unique complaint ID.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card card h-100 text-center p-4">
+                    <div class="feature-icon mb-3"><i class="fas fa-building fa-2x text-primary"></i></div>
+                    <h5 class="fw-bold">Department Assignment</h5>
+                    <p class="text-muted">Complaints are automatically routed to the right municipal department.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card card h-100 text-center p-4">
+                    <div class="feature-icon mb-3"><i class="fas fa-bolt fa-2x text-primary"></i></div>
+                    <h5 class="fw-bold">Priority Management</h5>
+                    <p class="text-muted">Issues are prioritized so urgent problems get addressed first.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card card h-100 text-center p-4">
+                    <div class="feature-icon mb-3"><i class="fas fa-check-circle fa-2x text-success"></i></div>
+                    <h5 class="fw-bold">Resolution Tracking</h5>
+                    <p class="text-muted">View resolution details and proof photos after issues are fixed.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card card h-100 text-center p-4">
+                    <div class="feature-icon mb-3"><i class="fas fa-star fa-2x text-warning"></i></div>
+                    <h5 class="fw-bold">Citizen Feedback</h5>
+                    <p class="text-muted">Rate and comment on resolutions to help improve city services.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ═══════════ HOW IT WORKS ═══════════ -->
+<section class="py-5">
+    <div class="container">
+        <h2 class="text-center fw-bold mb-5">How It Works</h2>
+        <div class="row g-4 text-center">
+            <div class="col-md-3">
+                <div class="step-card">
+                    <div class="step-number">1</div>
+                    <h5 class="fw-bold mt-3">Register &amp; Login</h5>
+                    <p class="text-muted">Create your free citizen account in minutes.</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="step-card">
+                    <div class="step-number">2</div>
+                    <h5 class="fw-bold mt-3">Submit Complaint</h5>
+                    <p class="text-muted">Describe the issue, upload a photo, and submit.</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="step-card">
+                    <div class="step-number">3</div>
+                    <h5 class="fw-bold mt-3">Track Progress</h5>
+                    <p class="text-muted">Use your complaint ID to monitor real-time progress.</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="step-card">
+                    <div class="step-number">4</div>
+                    <h5 class="fw-bold mt-3">Get Resolution</h5>
+                    <p class="text-muted">View resolution details and share your feedback.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ═══════════ CTA ═══════════ -->
+<section class="cta-section text-white text-center py-5">
+    <div class="container">
+        <h2 class="fw-bold mb-3">Ready to Make Your City Better?</h2>
+        <p class="lead mb-4">Join CivicFix today and help build a cleaner, safer community.</p>
+        {% if not current_user.is_authenticated %}
+            <a href="{{ url_for('auth.register') }}" class="btn btn-light btn-lg px-5"><i class="fas fa-user-plus"></i> Get Started</a>
+        {% else %}
+            <a href="{{ url_for('complaints.submit') }}" class="btn btn-light btn-lg px-5"><i class="fas fa-plus-circle"></i> Submit a Complaint</a>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

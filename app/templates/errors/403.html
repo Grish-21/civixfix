@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}403 Forbidden{% endblock %}
+
+{% block content %}
+<div class="container py-5 text-center my-5">
+    <div class="py-5">
+        <h1 class="display-1 fw-bold text-danger">403</h1>
+        <h3 class="fw-bold mb-3">Access Denied / Forbidden</h3>
+        <p class="text-muted lead mx-auto mb-4" style="max-width: 500px;">
+            You do not possess the required security permissions or role credentials to access this administrative zone.
+        </p>
+        <div class="d-flex justify-content-center gap-3">
+            <a href="{{ url_for('main.index') }}" class="btn btn-primary px-4"><i class="fas fa-home me-2"></i>Return Home</a>
+            {% if current_user.is_authenticated and current_user.is_citizen %}
+                <a href="{{ url_for('citizen.dashboard') }}" class="btn btn-outline-secondary px-4"><i class="fas fa-tachometer-alt me-2"></i>My Dashboard</a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

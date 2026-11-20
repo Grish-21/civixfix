@@ -1,0 +1,227 @@
+{% extends 'base.html' %}
+
+{% block title %}Track Complaint - CivicFix{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb mb-0">
+            <li class="breadcrumb-item"><a href="{{ url_for('citizen.dashboard') }}" class="text-decoration-none">Dashboard</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Track Complaint</li>
+        </ol>
+    </nav>
+
+    <!-- Page Header -->
+    <div class="text-center mb-5">
+        <div class="rounded-circle bg-primary bg-opacity-10 text-primary d-inline-flex align-items-center justify-content-center mb-3" style="width: 68px; height: 68px;">
+            <i class="fa-solid fa-magnifying-glass-location fs-2"></i>
+        </div>
+        <h2 class="fw-bold text-dark mb-1">Track Your Complaint</h2>
+        <p class="text-muted mx-auto" style="max-width: 600px;">
+            Enter your unique Complaint ID to monitor real-time investigation, departmental assignment, and resolution progress.
+        </p>
+    </div>
+
+    <!-- Search Card -->
+    <div class="row justify-content-center mb-5">
+        <div class="col-12 col-md-8 col-lg-6">
+            <div class="card border-0 shadow rounded-4 bg-white overflow-hidden">
+                <div class="card-body p-4 p-md-4">
+                    <form method="GET" action="{{ url_for('complaints.track') }}">
+                        <label for="complaint_id" class="form-label fw-semibold text-dark mb-2">Complaint ID</label>
+                        <div class="input-group input-group-lg mb-2">
+                            <span class="input-group-text bg-light border-end-0 text-muted">
+                                <i class="fa-solid fa-hashtag"></i>
+                            </span>
+                            <input type="text" class="form-control bg-light border-start-0 font-monospace"
+                                   id="complaint_id" name="complaint_id"
+                                   placeholder="e.g., CF-20261120-0001"
+                                   value="{{ request.args.get('complaint_id', '') }}"
+                                   required autofocus>
+                            <button type="submit" class="btn btn-primary px-4 fw-medium">
+                                <i class="fa-solid fa-magnifying-glass me-1"></i>Track
+                            </button>
+                        </div>
+                        <div class="form-text text-muted small">
+                            <i class="fa-solid fa-circle-info me-1"></i> Complaint ID format: CF-YYYYMMDD-XXXX
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Results Section -->
+    <div class="row justify-content-center">
+        <div class="col-12 col-lg-8">
+            {% if searched and complaint %}
+            <!-- Found Complaint Card -->
+            <div class="card border-0 shadow-sm rounded-3 bg-white overflow-hidden mb-4 border-top border-primary border-4">
+                <div class="card-body p-4">
+                    <!-- Header Info -->
+                    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-start gap-2 mb-3">
+                        <div>
+                            <div class="d-flex align-items-center gap-2 mb-1">
+                                <span class="badge bg-light text-primary border font-monospace fs-6">{{ complaint.complaint_id }}</span>
+                                
+                                <!-- Status Badge -->
+                                {% if complaint.status == 'Submitted' %}
+                                    <span class="badge bg-secondary">Submitted</span>
+                                {% elif complaint.status == 'Under Review' %}
+                                    <span class="badge bg-info text-dark">Under Review</span>
+                                {% elif complaint.status == 'Verified' %}
+                                    <span class="badge bg-primary">Verified</span>
+                                {% elif complaint.status == 'Assigned' %}
+                                    <span class="badge bg-warning text-dark">Assigned</span>
+                                {% elif complaint.status == 'In Progress' %}
+                                    <span class="badge bg-info text-dark">In Progress</span>
+                                {% elif complaint.status == 'Resolved' %}
+                                    <span class="badge bg-success">Resolved</span>
+                                {% elif complaint.status == 'Rejected' %}
+                                    <span class="badge bg-danger">Rejected</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">{{ complaint.status }}</span>
+                                {% endif %}
+
+                                <!-- Priority Badge -->
+                                {% if complaint.priority == 'Low' %}
+                                    <span class="badge bg-success bg-opacity-75">Low</span>
+                                {% elif complaint.priority == 'Medium' %}
+                                    <span class="badge bg-warning text-dark">Medium</span>
+                                {% elif complaint.priority == 'High' %}
+                                    <span class="badge" style="background-color: #fd7e14; color: #fff;">High</span>
+                                {% elif complaint.priority == 'Urgent' %}
+                                    <span class="badge bg-danger">Urgent</span>
+                                {% endif %}
+                            </div>
+                            <h4 class="fw-bold text-dark mb-1">{{ complaint.title }}</h4>
+                            <p class="text-muted small mb-0">
+                                <i class="fa-solid fa-tag me-1"></i> {{ complaint.category }} &nbsp;&bull;&nbsp;
+                                <i class="fa-regular fa-calendar me-1"></i> Submitted: {{ complaint.created_at.strftime('%d %b %Y, %I:%M %p') }}
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Mini Status Timeline / Progress Bar -->
+                    <div class="bg-light p-3 rounded-3 mb-4">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="small fw-semibold text-muted text-uppercase">Tracking Status</span>
+                            <span class="small fw-bold text-primary">{{ complaint.status }}</span>
+                        </div>
+
+                        {% if complaint.status == 'Rejected' %}
+                            <div class="progress" style="height: 10px;">
+                                <div class="progress-bar bg-danger" role="progressbar" style="width: 100%;" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                            <div class="small text-danger mt-2">
+                                <i class="fa-solid fa-circle-exclamation me-1"></i> This complaint has been rejected by municipal authorities.
+                            </div>
+                        {% else %}
+                            {% set pct_map = {
+                                'Submitted': 15,
+                                'Under Review': 32,
+                                'Verified': 50,
+                                'Assigned': 68,
+                                'In Progress': 85,
+                                'Resolved': 100
+                            } %}
+                            {% set pct = pct_map.get(complaint.status, 20) %}
+                            <div class="progress mb-2" style="height: 10px;">
+                                <div class="progress-bar {% if complaint.status == 'Resolved' %}bg-success{% else %}bg-primary{% endif %} progress-bar-striped progress-bar-animated"
+                                     role="progressbar" style="width: {{ pct }}%;" aria-valuenow="{{ pct }}" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                            <!-- Stepper Points -->
+                            <div class="d-flex justify-content-between text-muted" style="font-size: 0.72rem;">
+                                <span>Submitted</span>
+                                <span>Review</span>
+                                <span>Verified</span>
+                                <span>Assigned</span>
+                                <span>In Progress</span>
+                                <span>Resolved</span>
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Brief Details -->
+                    <div class="row g-3 mb-4 small">
+                        <div class="col-sm-6">
+                            <span class="text-muted d-block">Department:</span>
+                            <span class="fw-medium text-dark">
+                                {% if complaint.department %}
+                                    {{ complaint.department.department_name }}
+                                {% else %}
+                                    <span class="text-muted fst-italic">Pending Assignment</span>
+                                {% endif %}
+                            </span>
+                        </div>
+                        <div class="col-sm-6">
+                            <span class="text-muted d-block">Location Area:</span>
+                            <span class="fw-medium text-dark">{{ complaint.area }}</span>
+                        </div>
+                    </div>
+
+                    <!-- Action Link -->
+                    <div class="d-flex justify-content-end">
+                        <a href="{{ url_for('complaints.detail', complaint_id=complaint.complaint_id) }}" class="btn btn-primary rounded-pill px-4">
+                            View Full Details & Updates <i class="fa-solid fa-arrow-right ms-1"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            {% elif searched and not complaint %}
+            <!-- Not Found Alert -->
+            <div class="card border-0 shadow-sm rounded-3 bg-white p-4 text-center mb-4">
+                <div class="rounded-circle bg-danger bg-opacity-10 text-danger d-inline-flex align-items-center justify-content-center mb-3 mx-auto" style="width: 64px; height: 64px;">
+                    <i class="fa-solid fa-circle-xmark fs-2"></i>
+                </div>
+                <h5 class="fw-bold text-dark mb-2">Complaint Not Found</h5>
+                <p class="text-muted mb-4 mx-auto" style="max-width: 480px;">
+                    No complaint found with ID <strong>"{{ request.args.get('complaint_id', '') }}"</strong>, or it does not belong to your account.
+                </p>
+                <div class="d-flex justify-content-center gap-2">
+                    <a href="{{ url_for('complaints.track') }}" class="btn btn-outline-secondary rounded-pill px-4">
+                        Try Again
+                    </a>
+                    <a href="{{ url_for('citizen.my_complaints') }}" class="btn btn-primary rounded-pill px-4">
+                        View All My Complaints
+                    </a>
+                </div>
+            </div>
+
+            {% else %}
+            <!-- Info Card when not searched yet -->
+            <div class="card border-0 shadow-sm rounded-3 bg-white p-4 p-md-5">
+                <h5 class="fw-bold text-dark mb-4 text-center">
+                    <i class="fa-solid fa-circle-question text-primary me-2"></i>How Complaint Tracking Works
+                </h5>
+                <div class="row g-4">
+                    <div class="col-12 col-md-4 text-center">
+                        <div class="rounded-circle bg-light d-inline-flex align-items-center justify-content-center text-primary mb-3" style="width: 56px; height: 56px;">
+                            <i class="fa-solid fa-1 fs-5 fw-bold"></i>
+                        </div>
+                        <h6 class="fw-bold text-dark mb-1">Get Your ID</h6>
+                        <p class="text-muted small mb-0">Whenever you submit a complaint, you receive a unique tracking ID such as <code>CF-20261120-0001</code>.</p>
+                    </div>
+                    <div class="col-12 col-md-4 text-center">
+                        <div class="rounded-circle bg-light d-inline-flex align-items-center justify-content-center text-primary mb-3" style="width: 56px; height: 56px;">
+                            <i class="fa-solid fa-2 fs-5 fw-bold"></i>
+                        </div>
+                        <h6 class="fw-bold text-dark mb-1">Real-time Updates</h6>
+                        <p class="text-muted small mb-0">Track verification, department assignment, on-site inspections, and scheduled repairs live.</p>
+                    </div>
+                    <div class="col-12 col-md-4 text-center">
+                        <div class="rounded-circle bg-light d-inline-flex align-items-center justify-content-center text-primary mb-3" style="width: 56px; height: 56px;">
+                            <i class="fa-solid fa-3 fs-5 fw-bold"></i>
+                        </div>
+                        <h6 class="fw-bold text-dark mb-1">Verified Resolution</h6>
+                        <p class="text-muted small mb-0">View photographic evidence of completed work, admin notes, and share your citizen feedback.</p>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

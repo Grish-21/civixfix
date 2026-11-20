@@ -1,0 +1,144 @@
+{% extends "base.html" %}
+{% block title %}About Us{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <!-- Header -->
+    <div class="text-center mb-5">
+        <h1 class="fw-bold text-primary"><i class="fas fa-info-circle"></i> About CivicFix</h1>
+        <p class="lead text-muted mx-auto" style="max-width: 750px;">
+            A centralized municipal grievance redressal platform engineered to bridge the communication gap between citizens and municipal administrations.
+        </p>
+    </div>
+
+    <!-- Academic Context Card -->
+    <div class="card shadow-sm border-0 mb-5 bg-light">
+        <div class="card-body p-4 p-md-5">
+            <div class="row align-items-center">
+                <div class="col-lg-8">
+                    <span class="badge bg-primary px-3 py-2 mb-3">Engineering Idea Lab Project</span>
+                    <h3 class="fw-bold">Urban System Problem Statement</h3>
+                    <p class="text-secondary mb-3">
+                        <em>"To observe operational patterns in urban environments and demonstrate a very basic system for improvement."</em>
+                    </p>
+                    <p class="mb-0 text-muted">
+                        CivicFix is developed as a prototype to tackle urban deterioration, lack of transparency in civic administration, and delayed public infrastructure maintenance. Through structured ticketing, real-time status transitions, and closed-loop citizen feedback, the system optimizes urban operations.
+                    </p>
+                </div>
+                <div class="col-lg-4 text-center mt-4 mt-lg-0">
+                    <div class="p-4 bg-white rounded-3 shadow-sm border">
+                        <i class="fas fa-city fa-4x text-primary mb-3"></i>
+                        <h6 class="fw-bold text-dark">Urban Lifecycle Redefined</h6>
+                        <small class="text-muted">Observation • Routing • Resolution • Verification</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Core Objectives -->
+    <div class="mb-5">
+        <h3 class="fw-bold text-center mb-4">Core Objectives</h3>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="card h-100 shadow-sm border-0">
+                    <div class="card-body p-4">
+                        <div class="text-primary mb-3"><i class="fas fa-pencil-alt fa-2x"></i></div>
+                        <h5 class="fw-bold">1. Simplified Reporting</h5>
+                        <p class="text-muted">Effortless multi-category complaint logging with visual evidence and locality detection.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100 shadow-sm border-0">
+                    <div class="card-body p-4">
+                        <div class="text-primary mb-3"><i class="fas fa-barcode fa-2x"></i></div>
+                        <h5 class="fw-bold">2. Unique Public Tracking</h5>
+                        <p class="text-muted">Generate tamper-proof unique tracking identifiers (<code>CF-YYYYMMDD-XXXX</code>) for transparent auditing.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100 shadow-sm border-0">
+                    <div class="card-body p-4">
+                        <div class="text-primary mb-3"><i class="fas fa-sitemap fa-2x"></i></div>
+                        <h5 class="fw-bold">3. Department Delegation</h5>
+                        <p class="text-muted">Automatic and manual routing of grievances to dedicated municipal wings (Roads, Sanitation, Water, Electrical).</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100 shadow-sm border-0">
+                    <div class="card-body p-4">
+                        <div class="text-primary mb-3"><i class="fas fa-history fa-2x"></i></div>
+                        <h5 class="fw-bold">4. Audit &amp; Accountability</h5>
+                        <p class="text-muted">Preserve timestamped audit logs for every state transition, preventing negligence or unverified closures.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100 shadow-sm border-0">
+                    <div class="card-body p-4">
+                        <div class="text-primary mb-3"><i class="fas fa-camera-retro fa-2x"></i></div>
+                        <h5 class="fw-bold">5. Evidence-Based Proof</h5>
+                        <p class="text-muted">Require resolution notes and optional photographic proof prior to marking tasks resolved.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100 shadow-sm border-0">
+                    <div class="card-body p-4">
+                        <div class="text-primary mb-3"><i class="fas fa-star-half-alt fa-2x"></i></div>
+                        <h5 class="fw-bold">6. Citizen Evaluation</h5>
+                        <p class="text-muted">Empower citizens to rate municipal service quality (1-5 stars) and record civic satisfaction metrics.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Future Scope -->
+    <div class="card border-primary border-opacity-25 shadow-sm">
+        <div class="card-header bg-primary text-white py-3">
+            <h5 class="mb-0 fw-bold"><i class="fas fa-rocket me-2"></i> Planned Architectural Expansions (Future Scope)</h5>
+        </div>
+        <div class="card-body p-4">
+            <p class="text-muted">The core database and route interfaces are architected to cleanly accommodate the following phase-two capabilities:</p>
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <div class="d-flex align-items-start">
+                        <i class="fas fa-map-marked-alt text-primary mt-1 me-3"></i>
+                        <div>
+                            <strong>GIS / Map Integration &amp; GPS Tagging:</strong> Interactive geo-coordinate pinning on OpenStreetMap or Google Maps.
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="d-flex align-items-start">
+                        <i class="fas fa-brain text-primary mt-1 me-3"></i>
+                        <div>
+                            <strong>AI Automated Classification &amp; Duplicate Detection:</strong> Vision-based validation to cluster co-located duplicate reports.
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="d-flex align-items-start">
+                        <i class="fas fa-bell text-primary mt-1 me-3"></i>
+                        <div>
+                            <strong>Automated SMS &amp; Email Dispatcher:</strong> Instant SMS/email notifications on status milestones.
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="d-flex align-items-start">
+                        <i class="fas fa-mobile-alt text-primary mt-1 me-3"></i>
+                        <div>
+                            <strong>Native Mobile Application:</strong> Cross-platform Flutter/React Native application using REST API wrappers.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

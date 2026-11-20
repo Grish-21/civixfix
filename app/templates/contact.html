@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+{% block title %}Contact Us{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="text-center mb-5">
+        <h1 class="fw-bold text-primary"><i class="fas fa-envelope-open-text"></i> Contact CivicFix Support</h1>
+        <p class="text-muted lead">Have queries, grievances about the portal, or administrative feedback? Send us a message.</p>
+    </div>
+
+    <div class="row g-5">
+        <!-- Contact Form -->
+        <div class="col-lg-7">
+            <div class="card shadow-sm border-0">
+                <div class="card-body p-4 p-md-5">
+                    <h4 class="fw-bold mb-4 text-dark"><i class="fas fa-paper-plane text-primary me-2"></i>Send an Inquiry</h4>
+                    
+                    <form action="{{ url_for('main.contact') }}" method="POST" novalidate>
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                        <div class="mb-3">
+                            <label for="name" class="form-label fw-semibold">Your Full Name <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light"><i class="fas fa-user text-muted"></i></span>
+                                <input type="text" class="form-control" id="name" name="name" required placeholder="e.g. Rahul Sharma" value="{{ current_user.full_name if current_user.is_authenticated else '' }}">
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="email" class="form-label fw-semibold">Email Address <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light"><i class="fas fa-envelope text-muted"></i></span>
+                                <input type="email" class="form-control" id="email" name="email" required placeholder="name@example.com" value="{{ current_user.email if current_user.is_authenticated else '' }}">
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="subject" class="form-label fw-semibold">Subject / Purpose <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light"><i class="fas fa-tag text-muted"></i></span>
+                                <input type="text" class="form-control" id="subject" name="subject" required placeholder="e.g. Portal Access or Grievance Inquiry">
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="message" class="form-label fw-semibold">Message <span class="text-danger">*</span></label>
+                            <textarea class="form-control" id="message" name="message" rows="5" required placeholder="Describe your concern or inquiry in detail..."></textarea>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary btn-lg w-100 fw-bold">
+                            <i class="fas fa-paper-plane me-2"></i>Submit Message
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contact Information Panel -->
+        <div class="col-lg-5">
+            <div class="card shadow-sm border-0 mb-4 bg-primary text-white">
+                <div class="card-body p-4 p-md-5">
+                    <h4 class="fw-bold mb-4"><i class="fas fa-building me-2"></i>Municipal Headquarters</h4>
+                    <ul class="list-unstyled mb-0 d-flex flex-column gap-3">
+                        <li class="d-flex align-items-start">
+                            <i class="fas fa-map-marker-alt fa-lg mt-1 me-3"></i>
+                            <div>
+                                <strong>Central Civic Bhavan</strong><br>
+                                Urban Planning &amp; Grievance Redressal Division,<br>
+                                Sector 4, Civic Center, Metropolis - 400001
+                            </div>
+                        </li>
+                        <li class="d-flex align-items-center">
+                            <i class="fas fa-phone-alt fa-lg me-3"></i>
+                            <div>
+                                <strong>Helpline (Toll-Free):</strong><br>
+                                1800-200-FIXIT (09:00 AM - 06:00 PM)
+                            </div>
+                        </li>
+                        <li class="d-flex align-items-center">
+                            <i class="fas fa-envelope fa-lg me-3"></i>
+                            <div>
+                                <strong>Direct Desk:</strong><br>
+                                contact@civicfix.demo
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="card shadow-sm border-0">
+                <div class="card-body p-4">
+                    <h5 class="fw-bold text-dark mb-3"><i class="fas fa-clock text-primary me-2"></i>Response Policy</h5>
+                    <p class="text-muted small mb-0">
+                        All inquiries received via this portal are recorded in our municipal database (<code>contact_messages</code>). An assigned representative reviews inquiries within 24 to 48 working hours.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,495 @@
+{% extends 'base.html' %}
+
+{% block title %}Manage Complaint {{ complaint.complaint_id }} - CivicFix{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb mb-0">
+            <li class="breadcrumb-item">
+                <a href="{{ url_for('admin.dashboard') }}" class="text-decoration-none text-primary">
+                    <i class="fa-solid fa-gauge-high me-1"></i>Dashboard
+                </a>
+            </li>
+            <li class="breadcrumb-item">
+                <a href="{{ url_for('admin.complaints') }}" class="text-decoration-none text-primary">
+                    All Complaints
+                </a>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page">
+                {{ complaint.complaint_id }}
+            </li>
+        </ol>
+    </nav>
+
+    <!-- Complaint Header -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 pb-3 border-bottom">
+        <div class="mb-2 mb-md-0">
+            <div class="d-flex align-items-center gap-2 flex-wrap">
+                <h1 class="h3 fw-bold text-dark mb-0">
+                    Complaint #{{ complaint.complaint_id }}
+                </h1>
+                <!-- Status Badge -->
+                {% if complaint.status == 'Submitted' %}
+                    <span class="badge bg-secondary px-3 py-2 fs-6">Submitted</span>
+                {% elif complaint.status == 'Under Review' %}
+                    <span class="badge bg-info text-dark px-3 py-2 fs-6">Under Review</span>
+                {% elif complaint.status == 'Verified' %}
+                    <span class="badge bg-primary px-3 py-2 fs-6">Verified</span>
+                {% elif complaint.status == 'Assigned' %}
+                    <span class="badge bg-warning text-dark px-3 py-2 fs-6">Assigned</span>
+                {% elif complaint.status == 'In Progress' %}
+                    <span class="badge bg-info text-dark px-3 py-2 fs-6">In Progress</span>
+                {% elif complaint.status == 'Resolved' %}
+                    <span class="badge bg-success px-3 py-2 fs-6">Resolved</span>
+                {% elif complaint.status == 'Rejected' %}
+                    <span class="badge bg-danger px-3 py-2 fs-6">Rejected</span>
+                {% else %}
+                    <span class="badge bg-secondary px-3 py-2 fs-6">{{ complaint.status }}</span>
+                {% endif %}
+
+                <!-- Priority Badge -->
+                {% if complaint.priority == 'Low' %}
+                    <span class="badge bg-success px-3 py-2 fs-6">Low Priority</span>
+                {% elif complaint.priority == 'Medium' %}
+                    <span class="badge bg-warning text-dark px-3 py-2 fs-6">Medium Priority</span>
+                {% elif complaint.priority == 'High' %}
+                    <span class="badge bg-danger px-3 py-2 fs-6">High Priority</span>
+                {% elif complaint.priority == 'Urgent' %}
+                    <span class="badge bg-danger text-white fw-bold px-3 py-2 fs-6">
+                        <i class="fa-solid fa-triangle-exclamation me-1"></i>Urgent Priority
+                    </span>
+                {% else %}
+                    <span class="badge bg-secondary px-3 py-2 fs-6">{{ complaint.priority }}</span>
+                {% endif %}
+            </div>
+            <p class="text-muted small mt-1 mb-0">
+                Created on {{ complaint.created_at.strftime('%d %B %Y at %I:%M %p') if complaint.created_at else 'Unknown date' }}
+            </p>
+        </div>
+        <div>
+            <a href="{{ url_for('admin.complaints') }}" class="btn btn-outline-secondary">
+                <i class="fa-solid fa-arrow-left me-1"></i> Back to Complaints
+            </a>
+        </div>
+    </div>
+
+    <!-- Main Two-Column Layout -->
+    <div class="row g-4">
+        <!-- LEFT COLUMN (col-lg-8): Complaint Information, Evidence, History, Resolution & Feedback -->
+        <div class="col-12 col-lg-8">
+            <!-- Complaint Information Card -->
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-header bg-white py-3 border-0">
+                    <h5 class="card-title fw-bold text-dark mb-0">
+                        <i class="fa-solid fa-circle-info text-primary me-2"></i>Complaint Information
+                    </h5>
+                </div>
+                <div class="card-body pt-0">
+                    <div class="mb-3">
+                        <label class="text-muted small fw-semibold text-uppercase">Complaint Title</label>
+                        <h4 class="h5 fw-bold text-dark">{{ complaint.title }}</h4>
+                    </div>
+
+                    <div class="row g-3 mb-3">
+                        <div class="col-12 col-sm-6">
+                            <label class="text-muted small fw-semibold text-uppercase d-block">Category</label>
+                            <span class="badge bg-light text-dark border px-2 py-1 fs-6">
+                                <i class="fa-solid fa-tag me-1 text-primary"></i>{{ complaint.category }}
+                            </span>
+                        </div>
+                        <div class="col-12 col-sm-6">
+                            <label class="text-muted small fw-semibold text-uppercase d-block">Assigned Department</label>
+                            {% if complaint.department %}
+                                <span class="badge bg-secondary bg-opacity-10 text-dark border px-2 py-1 fs-6">
+                                    <i class="fa-solid fa-building me-1 text-secondary"></i>{{ complaint.department.department_name }}
+                                </span>
+                            {% else %}
+                                <span class="text-muted fst-italic">Not assigned yet</span>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="text-muted small fw-semibold text-uppercase d-block mb-1">Description</label>
+                        <div class="p-3 bg-light rounded border text-dark" style="white-space: pre-wrap; font-size: 0.95rem; line-height: 1.6;">{{ complaint.description }}</div>
+                    </div>
+
+                    <div class="row g-3 mb-3">
+                        <!-- Citizen Details -->
+                        <div class="col-12 col-md-6">
+                            <div class="p-3 border rounded bg-white h-100">
+                                <h6 class="fw-bold text-dark mb-2">
+                                    <i class="fa-solid fa-user text-primary me-2"></i>Citizen Details
+                                </h6>
+                                <p class="mb-1"><strong>Name:</strong> {{ complaint.citizen.full_name if complaint.citizen else 'Unknown' }}</p>
+                                <p class="mb-1"><strong>Email:</strong> <a href="mailto:{{ complaint.citizen.email if complaint.citizen else '' }}" class="text-decoration-none">{{ complaint.citizen.email if complaint.citizen else 'N/A' }}</a></p>
+                                <p class="mb-0"><strong>Mobile:</strong> {{ complaint.citizen.mobile if complaint.citizen else 'N/A' }}</p>
+                            </div>
+                        </div>
+
+                        <!-- Location Details -->
+                        <div class="col-12 col-md-6">
+                            <div class="p-3 border rounded bg-white h-100">
+                                <h6 class="fw-bold text-dark mb-2">
+                                    <i class="fa-solid fa-location-dot text-danger me-2"></i>Location Details
+                                </h6>
+                                <p class="mb-1"><strong>Area:</strong> {{ complaint.area }}</p>
+                                <p class="mb-1"><strong>Address:</strong> {{ complaint.address }}</p>
+                                <p class="mb-0"><strong>Landmark:</strong> {{ complaint.landmark or 'None' }}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Timestamps & Admin Remarks Summary -->
+                    <div class="row g-3 pt-2 border-top text-muted small">
+                        <div class="col-12 col-sm-6">
+                            <strong>Submitted:</strong> {{ complaint.created_at.strftime('%d %b %Y, %I:%M %p') if complaint.created_at else 'N/A' }}
+                        </div>
+                        <div class="col-12 col-sm-6">
+                            <strong>Last Updated:</strong> {{ complaint.updated_at.strftime('%d %b %Y, %I:%M %p') if complaint.updated_at else 'N/A' }}
+                        </div>
+                        {% if complaint.admin_remarks %}
+                        <div class="col-12 mt-2">
+                            <div class="p-2 bg-light rounded border">
+                                <strong class="text-dark"><i class="fa-solid fa-comment-dots text-primary me-1"></i>Current Admin Remarks:</strong>
+                                <span class="text-dark">{{ complaint.admin_remarks }}</span>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Complaint Image Card (if uploaded) -->
+            {% if complaint.image_filename %}
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-header bg-white py-3 border-0">
+                    <h5 class="card-title fw-bold text-dark mb-0">
+                        <i class="fa-solid fa-image text-primary me-2"></i>Citizen Uploaded Photo Evidence
+                    </h5>
+                </div>
+                <div class="card-body pt-0">
+                    <div class="text-center">
+                        <a href="{{ url_for('static', filename='uploads/complaints/' + complaint.image_filename) }}" target="_blank">
+                            <img src="{{ url_for('static', filename='uploads/complaints/' + complaint.image_filename) }}"
+                                 alt="Complaint Photo"
+                                 class="img-fluid rounded border shadow-sm"
+                                 style="max-height: 400px; object-fit: contain;">
+                        </a>
+                        <div class="mt-2">
+                            <a href="{{ url_for('static', filename='uploads/complaints/' + complaint.image_filename) }}" target="_blank" class="btn btn-sm btn-outline-secondary">
+                                <i class="fa-solid fa-arrow-up-right-from-square me-1"></i> View Full Image
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Resolution Details Card (if resolved) -->
+            {% if complaint.resolution %}
+            <div class="card shadow-sm border-2 border-success mb-4">
+                <div class="card-header bg-success bg-opacity-10 py-3 border-0">
+                    <h5 class="card-title fw-bold text-success mb-0">
+                        <i class="fa-solid fa-circle-check me-2"></i>Resolution Details
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <span class="small text-muted">
+                            Resolved by <strong>{{ complaint.resolution.admin.full_name if complaint.resolution.admin else 'Administrator' }}</strong>
+                        </span>
+                        <span class="badge bg-success">
+                            {{ complaint.resolution.resolved_at.strftime('%d %b %Y, %I:%M %p') if complaint.resolution.resolved_at else '' }}
+                        </span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="text-muted small fw-semibold text-uppercase d-block mb-1">Resolution Summary</label>
+                        <div class="p-3 bg-white rounded border border-success border-opacity-25 text-dark" style="white-space: pre-wrap; line-height: 1.6;">{{ complaint.resolution.resolution_description }}</div>
+                    </div>
+
+                    {% if complaint.resolution.resolution_image %}
+                    <div>
+                        <label class="text-muted small fw-semibold text-uppercase d-block mb-2">Resolution Proof Photo</label>
+                        <div class="text-center">
+                            <a href="{{ url_for('static', filename='uploads/resolutions/' + complaint.resolution.resolution_image) }}" target="_blank">
+                                <img src="{{ url_for('static', filename='uploads/resolutions/' + complaint.resolution.resolution_image) }}"
+                                     alt="Resolution Proof"
+                                     class="img-fluid rounded border shadow-sm"
+                                     style="max-height: 350px; object-fit: contain;">
+                            </a>
+                            <div class="mt-2">
+                                <a href="{{ url_for('static', filename='uploads/resolutions/' + complaint.resolution.resolution_image) }}" target="_blank" class="btn btn-sm btn-outline-success">
+                                    <i class="fa-solid fa-arrow-up-right-from-square me-1"></i> View Full Proof Image
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Citizen Feedback Card (if feedback submitted) -->
+            {% if complaint.feedback %}
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-header bg-white py-3 border-0">
+                    <h5 class="card-title fw-bold text-dark mb-0">
+                        <i class="fa-solid fa-star text-warning me-2"></i>Citizen Feedback & Rating
+                    </h5>
+                </div>
+                <div class="card-body pt-0">
+                    <div class="p-3 bg-light rounded border">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <div>
+                                {% for i in range(1, 6) %}
+                                    {% if i <= complaint.feedback.rating %}
+                                        <i class="fa-solid fa-star text-warning fs-5"></i>
+                                    {% else %}
+                                        <i class="fa-regular fa-star text-secondary fs-5"></i>
+                                    {% endif %}
+                                {% endfor %}
+                                <span class="ms-2 fw-bold text-dark">{{ complaint.feedback.rating }} / 5 Stars</span>
+                            </div>
+                            <span class="text-muted small">
+                                Submitted on {{ complaint.feedback.created_at.strftime('%d %b %Y') if complaint.feedback.created_at else '' }}
+                            </span>
+                        </div>
+                        <p class="mb-0 text-dark" style="white-space: pre-wrap;">
+                            {{ complaint.feedback.comment or 'No written comments provided by the citizen.' }}
+                        </p>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Status History Table Card -->
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-header bg-white py-3 border-0">
+                    <h5 class="card-title fw-bold text-dark mb-0">
+                        <i class="fa-solid fa-timeline text-primary me-2"></i>Status History & Audit Trail
+                    </h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th class="ps-3" style="width: 170px;">Date & Time</th>
+                                    <th>From</th>
+                                    <th>To</th>
+                                    <th>Updated By</th>
+                                    <th>Remarks</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% set histories = complaint.status_history.all() if complaint.status_history.all is defined else complaint.status_history %}
+                                {% if histories %}
+                                    {% for h in histories %}
+                                    <tr>
+                                        <td class="ps-3 text-muted small">
+                                            {{ h.created_at.strftime('%d %b %Y, %I:%M %p') if h.created_at else '-' }}
+                                        </td>
+                                        <td>
+                                            {% if h.previous_status %}
+                                                <span class="badge bg-secondary">{{ h.previous_status }}</span>
+                                            {% else %}
+                                                <span class="text-muted small fst-italic">Initial</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if h.new_status == 'Submitted' %}
+                                                <span class="badge bg-secondary">Submitted</span>
+                                            {% elif h.new_status == 'Under Review' %}
+                                                <span class="badge bg-info text-dark">Under Review</span>
+                                            {% elif h.new_status == 'Verified' %}
+                                                <span class="badge bg-primary">Verified</span>
+                                            {% elif h.new_status == 'Assigned' %}
+                                                <span class="badge bg-warning text-dark">Assigned</span>
+                                            {% elif h.new_status == 'In Progress' %}
+                                                <span class="badge bg-info text-dark">In Progress</span>
+                                            {% elif h.new_status == 'Resolved' %}
+                                                <span class="badge bg-success">Resolved</span>
+                                            {% elif h.new_status == 'Rejected' %}
+                                                <span class="badge bg-danger">Rejected</span>
+                                            {% else %}
+                                                <span class="badge bg-secondary">{{ h.new_status }}</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <span class="fw-medium text-dark small">
+                                                {{ h.updater.full_name if h.updater else 'System' }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <span class="small text-muted">{{ h.remarks or '-' }}</span>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                {% else %}
+                                    <tr>
+                                        <td colspan="5" class="text-center py-4 text-muted small">
+                                            No status history changes recorded yet.
+                                        </td>
+                                    </tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- RIGHT COLUMN (col-lg-4): Admin Action Panel -->
+        <div class="col-12 col-lg-4">
+            <!-- Action Panel: Update Complaint -->
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-header bg-white py-3 border-0">
+                    <h5 class="card-title fw-bold text-dark mb-0">
+                        <i class="fa-solid fa-sliders text-primary me-2"></i>Update Complaint
+                    </h5>
+                </div>
+                <div class="card-body pt-0">
+                    <form method="POST" action="{{ url_for('admin.update_complaint', complaint_id=complaint.complaint_id) }}">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                        <!-- Status Selection -->
+                        <div class="mb-3">
+                            <label for="status" class="form-label small fw-semibold text-muted">Status</label>
+                            <select class="form-select" id="status" name="status" required>
+                                {% for s in statuses %}
+                                    <option value="{{ s }}" {% if complaint.status == s %}selected{% endif %}>
+                                        {{ s }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <!-- Priority Selection -->
+                        <div class="mb-3">
+                            <label for="priority" class="form-label small fw-semibold text-muted">Priority</label>
+                            <select class="form-select" id="priority" name="priority" required>
+                                {% for p in priorities %}
+                                    <option value="{{ p }}" {% if complaint.priority == p %}selected{% endif %}>
+                                        {{ p }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <!-- Department Selection -->
+                        <div class="mb-3">
+                            <label for="department_id" class="form-label small fw-semibold text-muted">Department</label>
+                            <select class="form-select" id="department_id" name="department_id">
+                                <option value="">-- Select Department --</option>
+                                {% for dept in departments %}
+                                    <option value="{{ dept.id }}" {% if complaint.department_id == dept.id %}selected{% endif %}>
+                                        {{ dept.department_name }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <!-- Admin Remarks -->
+                        <div class="mb-3">
+                            <label for="admin_remarks" class="form-label small fw-semibold text-muted">Admin Remarks / Notes</label>
+                            <textarea class="form-control" id="admin_remarks" name="admin_remarks" rows="3"
+                                      placeholder="Add remarks or instructions for field officers...">{{ complaint.admin_remarks or '' }}</textarea>
+                            <div class="form-text small">Visible in complaint status tracking and updates.</div>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <button type="submit" class="btn btn-primary w-100" style="background-color: #1a73e8; border-color: #1a73e8;">
+                            <i class="fa-solid fa-floppy-disk me-1"></i> Update Complaint
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Action Panel: Resolve Complaint (Show if Status is 'In Progress') -->
+            {% if complaint.status == 'In Progress' %}
+            <div class="card shadow-sm border-2 border-success mb-4">
+                <div class="card-header bg-success bg-opacity-10 py-3 border-0">
+                    <h5 class="card-title fw-bold text-success mb-0">
+                        <i class="fa-solid fa-circle-check me-2"></i>Resolve Complaint
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <p class="small text-muted mb-3">
+                        Mark this complaint as completed and resolved. Please supply resolution details and optional photo evidence.
+                    </p>
+                    <form method="POST" action="{{ url_for('admin.resolve_complaint', complaint_id=complaint.complaint_id) }}"
+                          enctype="multipart/form-data"
+                          onsubmit="return confirm('Are you sure you want to mark this complaint as resolved?');">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                        <div class="mb-3">
+                            <label for="resolution_description" class="form-label small fw-semibold text-muted">
+                                Resolution Description <span class="text-danger">*</span>
+                            </label>
+                            <textarea class="form-control" id="resolution_description" name="resolution_description"
+                                      rows="3" required placeholder="Explain specific work done to resolve this issue..."></textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="resolution_image" class="form-label small fw-semibold text-muted">
+                                Proof Photo (Optional)
+                            </label>
+                            <input type="file" class="form-control" id="resolution_image" name="resolution_image"
+                                   accept=".jpg,.jpeg,.png">
+                            <div class="form-text small">Accepted formats: JPG, PNG. Max 5MB.</div>
+                        </div>
+
+                        <button type="submit" class="btn btn-success w-100">
+                            <i class="fa-solid fa-circle-check me-1"></i> Mark as Resolved
+                        </button>
+                    </form>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Action Panel: Reject Complaint (Show if not already Resolved or Rejected) -->
+            {% if complaint.status not in ['Rejected', 'Resolved'] %}
+            <div class="card shadow-sm border-2 border-danger mb-4">
+                <div class="card-header bg-danger bg-opacity-10 py-3 border-0">
+                    <h5 class="card-title fw-bold text-danger mb-0">
+                        <i class="fa-solid fa-ban me-2"></i>Reject Complaint
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <p class="small text-muted mb-3">
+                        If this complaint is duplicate, out of municipal jurisdiction, or invalid, state reason to reject.
+                    </p>
+                    <form method="POST" action="{{ url_for('admin.reject_complaint', complaint_id=complaint.complaint_id) }}"
+                          onsubmit="return confirm('Are you sure you want to reject this complaint?');">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                        <div class="mb-3">
+                            <label for="rejection_reason" class="form-label small fw-semibold text-muted">
+                                Rejection Reason <span class="text-danger">*</span>
+                            </label>
+                            <textarea class="form-control" id="rejection_reason" name="rejection_reason"
+                                      rows="3" required placeholder="Explain clearly why this complaint is rejected..."></textarea>
+                        </div>
+
+                        <button type="submit" class="btn btn-danger w-100">
+                            <i class="fa-solid fa-ban me-1"></i> Reject Complaint
+                        </button>
+                    </form>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Quick Navigation Link -->
+            <div class="d-grid gap-2">
+                <a href="{{ url_for('admin.complaints') }}" class="btn btn-outline-secondary">
+                    <i class="fa-solid fa-arrow-left me-1"></i> Back to All Complaints
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

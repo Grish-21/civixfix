@@ -1,0 +1,503 @@
+{% extends 'base.html' %}
+
+{% block title %}Admin Dashboard - CivicFix{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <!-- Page Header -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 pb-2 border-bottom">
+        <div class="mb-3 mb-md-0">
+            <h1 class="h3 fw-bold text-dark mb-1">
+                <i class="fa-solid fa-gauge-high text-primary me-2"></i>Admin Dashboard
+            </h1>
+            <p class="text-muted mb-0">Municipal Complaint Management & Real-time Operations Overview</p>
+        </div>
+        <div class="d-flex gap-2">
+            <a href="{{ url_for('admin.reports') }}" class="btn btn-outline-secondary">
+                <i class="fa-solid fa-chart-pie me-1"></i> View Reports
+            </a>
+            <a href="{{ url_for('admin.complaints') }}" class="btn btn-primary" style="background-color: #1a73e8; border-color: #1a73e8;">
+                <i class="fa-solid fa-list-check me-1"></i> Manage Complaints
+            </a>
+        </div>
+    </div>
+
+    <!-- Stats Cards: Row 1 -->
+    <div class="row g-3 mb-3">
+        <!-- Total Complaints -->
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="card shadow-sm border-0 border-start border-primary border-4 h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <span class="text-uppercase text-muted fw-semibold small">Total Complaints</span>
+                            <h2 class="display-6 fw-bold text-dark mt-2 mb-0">
+                                {{ stats.total if stats.total is defined else stats.get('total', 0) }}
+                            </h2>
+                        </div>
+                        <div class="rounded-circle p-3 bg-primary bg-opacity-10 text-primary">
+                            <i class="fa-solid fa-folder-open fa-2x"></i>
+                        </div>
+                    </div>
+                    <div class="mt-3 pt-2 border-top">
+                        <a href="{{ url_for('admin.complaints') }}" class="text-decoration-none small text-primary fw-medium">
+                            View All <i class="fa-solid fa-arrow-right ms-1"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- New / Submitted -->
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="card shadow-sm border-0 border-start border-info border-4 h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <span class="text-uppercase text-muted fw-semibold small">New / Submitted</span>
+                            <h2 class="display-6 fw-bold text-dark mt-2 mb-0">
+                                {{ stats.new if stats.new is defined else (stats.Submitted if stats.Submitted is defined else stats.get('new', stats.get('Submitted', 0))) }}
+                            </h2>
+                        </div>
+                        <div class="rounded-circle p-3 bg-info bg-opacity-10 text-info">
+                            <i class="fa-solid fa-paper-plane fa-2x"></i>
+                        </div>
+                    </div>
+                    <div class="mt-3 pt-2 border-top">
+                        <a href="{{ url_for('admin.complaints', status='Submitted') }}" class="text-decoration-none small text-info fw-medium">
+                            Filter Submitted <i class="fa-solid fa-arrow-right ms-1"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Under Review -->
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="card shadow-sm border-0 border-start border-secondary border-4 h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <span class="text-uppercase text-muted fw-semibold small">Under Review</span>
+                            <h2 class="display-6 fw-bold text-dark mt-2 mb-0">
+                                {{ stats.under_review if stats.under_review is defined else stats.get('under_review', stats.get('Under Review', 0)) }}
+                            </h2>
+                        </div>
+                        <div class="rounded-circle p-3 bg-secondary bg-opacity-10 text-secondary">
+                            <i class="fa-solid fa-magnifying-glass fa-2x"></i>
+                        </div>
+                    </div>
+                    <div class="mt-3 pt-2 border-top">
+                        <a href="{{ url_for('admin.complaints', status='Under Review') }}" class="text-decoration-none small text-secondary fw-medium">
+                            Review Queue <i class="fa-solid fa-arrow-right ms-1"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Verified -->
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="card shadow-sm border-0 border-start border-primary border-4 h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <span class="text-uppercase text-muted fw-semibold small">Verified</span>
+                            <h2 class="display-6 fw-bold text-dark mt-2 mb-0">
+                                {{ stats.verified if stats.verified is defined else stats.get('verified', stats.get('Verified', 0)) }}
+                            </h2>
+                        </div>
+                        <div class="rounded-circle p-3 bg-primary bg-opacity-10 text-primary">
+                            <i class="fa-solid fa-check-double fa-2x"></i>
+                        </div>
+                    </div>
+                    <div class="mt-3 pt-2 border-top">
+                        <a href="{{ url_for('admin.complaints', status='Verified') }}" class="text-decoration-none small text-primary fw-medium">
+                            Filter Verified <i class="fa-solid fa-arrow-right ms-1"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Cards: Row 2 -->
+    <div class="row g-3 mb-4">
+        <!-- Assigned -->
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="card shadow-sm border-0 border-start border-warning border-4 h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <span class="text-uppercase text-muted fw-semibold small">Assigned</span>
+                            <h2 class="display-6 fw-bold text-dark mt-2 mb-0">
+                                {{ stats.assigned if stats.assigned is defined else stats.get('assigned', stats.get('Assigned', 0)) }}
+                            </h2>
+                        </div>
+                        <div class="rounded-circle p-3 bg-warning bg-opacity-10 text-warning">
+                            <i class="fa-solid fa-building-user fa-2x"></i>
+                        </div>
+                    </div>
+                    <div class="mt-3 pt-2 border-top">
+                        <a href="{{ url_for('admin.complaints', status='Assigned') }}" class="text-decoration-none small text-warning fw-medium">
+                            Filter Assigned <i class="fa-solid fa-arrow-right ms-1"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- In Progress -->
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="card shadow-sm border-0 border-start border-info border-4 h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <span class="text-uppercase text-muted fw-semibold small">In Progress</span>
+                            <h2 class="display-6 fw-bold text-dark mt-2 mb-0">
+                                {{ stats.in_progress if stats.in_progress is defined else stats.get('in_progress', stats.get('In Progress', 0)) }}
+                            </h2>
+                        </div>
+                        <div class="rounded-circle p-3 bg-info bg-opacity-10 text-info">
+                            <i class="fa-solid fa-bars-progress fa-2x"></i>
+                        </div>
+                    </div>
+                    <div class="mt-3 pt-2 border-top">
+                        <a href="{{ url_for('admin.complaints', status='In Progress') }}" class="text-decoration-none small text-info fw-medium">
+                            Track Active <i class="fa-solid fa-arrow-right ms-1"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Resolved -->
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="card shadow-sm border-0 border-start border-success border-4 h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <span class="text-uppercase text-muted fw-semibold small">Resolved</span>
+                            <h2 class="display-6 fw-bold text-success mt-2 mb-0">
+                                {{ stats.resolved if stats.resolved is defined else stats.get('resolved', stats.get('Resolved', 0)) }}
+                            </h2>
+                        </div>
+                        <div class="rounded-circle p-3 bg-success bg-opacity-10 text-success">
+                            <i class="fa-solid fa-circle-check fa-2x"></i>
+                        </div>
+                    </div>
+                    <div class="mt-3 pt-2 border-top">
+                        <a href="{{ url_for('admin.complaints', status='Resolved') }}" class="text-decoration-none small text-success fw-medium">
+                            Filter Resolved <i class="fa-solid fa-arrow-right ms-1"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Rejected -->
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="card shadow-sm border-0 border-start border-danger border-4 h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <span class="text-uppercase text-muted fw-semibold small">Rejected</span>
+                            <h2 class="display-6 fw-bold text-danger mt-2 mb-0">
+                                {{ stats.rejected if stats.rejected is defined else stats.get('rejected', stats.get('Rejected', 0)) }}
+                            </h2>
+                        </div>
+                        <div class="rounded-circle p-3 bg-danger bg-opacity-10 text-danger">
+                            <i class="fa-solid fa-circle-xmark fa-2x"></i>
+                        </div>
+                    </div>
+                    <div class="mt-3 pt-2 border-top">
+                        <a href="{{ url_for('admin.complaints', status='Rejected') }}" class="text-decoration-none small text-danger fw-medium">
+                            Filter Rejected <i class="fa-solid fa-arrow-right ms-1"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Charts Section -->
+    <div class="row g-4 mb-4">
+        <!-- Category Distribution -->
+        <div class="col-12 col-lg-6">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-header bg-white py-3 border-0 d-flex justify-content-between align-items-center">
+                    <h5 class="card-title fw-bold text-dark mb-0">
+                        <i class="fa-solid fa-chart-pie text-primary me-2"></i>Complaints by Category
+                    </h5>
+                    <span class="badge bg-light text-muted">Distribution</span>
+                </div>
+                <div class="card-body d-flex align-items-center justify-content-center" style="min-height: 320px;">
+                    <div style="position: relative; width: 100%; height: 300px;">
+                        <canvas id="categoryChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Monthly Trends -->
+        <div class="col-12 col-lg-6">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-header bg-white py-3 border-0 d-flex justify-content-between align-items-center">
+                    <h5 class="card-title fw-bold text-dark mb-0">
+                        <i class="fa-solid fa-chart-simple text-primary me-2"></i>Monthly Complaint Trends
+                    </h5>
+                    <span class="badge bg-light text-muted">Volume</span>
+                </div>
+                <div class="card-body d-flex align-items-center justify-content-center" style="min-height: 320px;">
+                    <div style="position: relative; width: 100%; height: 300px;">
+                        <canvas id="monthlyChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Complaints Section -->
+    <div class="card shadow-sm border-0 mb-4">
+        <div class="card-header bg-white py-3 border-0 d-flex flex-column flex-sm-row justify-content-between align-items-sm-center">
+            <div>
+                <h5 class="card-title fw-bold text-dark mb-1">
+                    <i class="fa-solid fa-clock-rotate-left text-primary me-2"></i>Recent Complaints
+                </h5>
+                <p class="text-muted small mb-0">Latest complaints submitted by citizens requiring municipal action</p>
+            </div>
+            <div class="mt-2 mt-sm-0">
+                <a href="{{ url_for('admin.complaints') }}" class="btn btn-sm btn-outline-primary">
+                    <i class="fa-solid fa-list me-1"></i> View All Complaints
+                </a>
+            </div>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="ps-3" style="width: 140px;">Complaint ID</th>
+                            <th>Citizen</th>
+                            <th>Category</th>
+                            <th>Title</th>
+                            <th>Area</th>
+                            <th>Date</th>
+                            <th>Priority</th>
+                            <th>Status</th>
+                            <th class="text-end pe-3">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if recent_complaints %}
+                            {% for complaint in recent_complaints %}
+                            <tr>
+                                <td class="ps-3">
+                                    <a href="{{ url_for('admin.complaint_detail', complaint_id=complaint.complaint_id) }}" class="fw-semibold text-primary text-decoration-none">
+                                        {{ complaint.complaint_id }}
+                                    </a>
+                                </td>
+                                <td>
+                                    <div class="fw-medium text-dark">{{ complaint.citizen.full_name if complaint.citizen else 'N/A' }}</div>
+                                    <div class="text-muted small">{{ complaint.citizen.mobile if complaint.citizen else '' }}</div>
+                                </td>
+                                <td>
+                                    <span class="badge bg-light text-dark border">{{ complaint.category }}</span>
+                                </td>
+                                <td>
+                                    <span class="d-inline-block text-truncate" style="max-width: 200px;" title="{{ complaint.title }}">
+                                        {{ complaint.title }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="text-secondary small">
+                                        <i class="fa-solid fa-location-dot me-1 text-danger"></i>{{ complaint.area }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="small text-muted">
+                                        {{ complaint.created_at.strftime('%d %b %Y') if complaint.created_at else '-' }}
+                                    </span>
+                                </td>
+                                <td>
+                                    {% if complaint.priority == 'Low' %}
+                                        <span class="badge bg-success">Low</span>
+                                    {% elif complaint.priority == 'Medium' %}
+                                        <span class="badge bg-warning text-dark">Medium</span>
+                                    {% elif complaint.priority == 'High' %}
+                                        <span class="badge bg-danger">High</span>
+                                    {% elif complaint.priority == 'Urgent' %}
+                                        <span class="badge bg-danger text-white fw-bold"><i class="fa-solid fa-triangle-exclamation me-1"></i>Urgent</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">{{ complaint.priority }}</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if complaint.status == 'Submitted' %}
+                                        <span class="badge bg-secondary">Submitted</span>
+                                    {% elif complaint.status == 'Under Review' %}
+                                        <span class="badge bg-info text-dark">Under Review</span>
+                                    {% elif complaint.status == 'Verified' %}
+                                        <span class="badge bg-primary">Verified</span>
+                                    {% elif complaint.status == 'Assigned' %}
+                                        <span class="badge bg-warning text-dark">Assigned</span>
+                                    {% elif complaint.status == 'In Progress' %}
+                                        <span class="badge bg-info text-dark">In Progress</span>
+                                    {% elif complaint.status == 'Resolved' %}
+                                        <span class="badge bg-success">Resolved</span>
+                                    {% elif complaint.status == 'Rejected' %}
+                                        <span class="badge bg-danger">Rejected</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">{{ complaint.status }}</span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-end pe-3">
+                                    <a href="{{ url_for('admin.complaint_detail', complaint_id=complaint.complaint_id) }}" class="btn btn-sm btn-outline-primary">
+                                        <i class="fa-solid fa-eye me-1"></i> View
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td colspan="9" class="text-center py-5 text-muted">
+                                    <i class="fa-solid fa-inbox fa-3x mb-3 text-secondary d-block"></i>
+                                    <p class="mb-0">No complaints recorded yet.</p>
+                                </td>
+                            </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="card-footer bg-white py-3 border-0 text-center">
+            <a href="{{ url_for('admin.complaints') }}" class="btn btn-link text-primary text-decoration-none fw-semibold">
+                View All Complaints <i class="fa-solid fa-arrow-right ms-1"></i>
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    // ── Category Distribution Chart ──────────────────────────────
+    const categoryLabels = {{ (category_stats|map(attribute='category')|list)|tojson }};
+    const categoryCounts = {{ (category_stats|map(attribute='count')|list)|tojson }};
+
+    const categoryColors = [
+        '#1a73e8', '#34a853', '#fbbc05', '#ea4335',
+        '#6f42c1', '#00b4d8', '#fd7e14', '#20c997',
+        '#6c757d', '#d63384', '#0d6efd'
+    ];
+
+    const categoryCtx = document.getElementById('categoryChart');
+    if (categoryCtx) {
+        if (categoryLabels.length > 0) {
+            new Chart(categoryCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: categoryLabels,
+                    datasets: [{
+                        data: categoryCounts,
+                        backgroundColor: categoryColors.slice(0, categoryLabels.length),
+                        borderWidth: 2,
+                        borderColor: '#ffffff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                boxWidth: 12,
+                                padding: 12,
+                                font: { size: 11 }
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function (context) {
+                                    const val = context.raw || 0;
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    const pct = total > 0 ? ((val / total) * 100).toFixed(1) : 0;
+                                    return ` ${context.label}: ${val} (${pct}%)`;
+                                }
+                            }
+                        }
+                    },
+                    cutout: '60%'
+                }
+            });
+        } else {
+            categoryCtx.parentElement.innerHTML = '<div class="text-muted text-center py-5"><i class="fa-solid fa-chart-pie fa-2x mb-2 d-block"></i>No category data available</div>';
+        }
+    }
+
+    // ── Monthly Trends Chart ──────────────────────────────────────
+    const monthlyLabels = {{ (monthly_stats|map(attribute='month')|list)|tojson }};
+    const monthlyCounts = {{ (monthly_stats|map(attribute='count')|list)|tojson }};
+
+    const monthlyCtx = document.getElementById('monthlyChart');
+    if (monthlyCtx) {
+        if (monthlyLabels.length > 0) {
+            new Chart(monthlyCtx, {
+                type: 'bar',
+                data: {
+                    labels: monthlyLabels,
+                    datasets: [{
+                        label: 'Complaints Submitted',
+                        data: monthlyCounts,
+                        backgroundColor: '#1a73e8',
+                        borderColor: '#1557b0',
+                        borderRadius: 6,
+                        maxBarThickness: 45
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                precision: 0,
+                                font: { size: 12 }
+                            },
+                            grid: {
+                                color: '#f0f0f0'
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            },
+                            ticks: {
+                                font: { size: 12 }
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function (context) {
+                                    return ` Complaints: ${context.raw}`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        } else {
+            monthlyCtx.parentElement.innerHTML = '<div class="text-muted text-center py-5"><i class="fa-solid fa-chart-simple fa-2x mb-2 d-block"></i>No monthly trend data available</div>';
+        }
+    }
+});
+</script>
+{% endblock %}

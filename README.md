@@ -273,4 +273,4 @@ All rights reserved © 2026 CivicFix Team.
 
 ## Render deployment
 
-Use render.yaml to deploy the paid Python web service with a persistent disk mounted at /var/data. SQLite and uploaded images are stored on that disk, Render generates the Flask secret key, and Render prompts you to set CIVICFIX_ADMIN_PASSWORD. The new service starts with a fresh database; the local SQLite database and existing uploads remain on this computer.
+Use render.yaml to deploy the Python web service on Render's Free plan. Render generates the Flask secret key and prompts you to set CIVICFIX_ADMIN_PASSWORD. SQLite and uploaded images use temporary storage, so complaints, accounts, and images can be lost whenever the service spins down, restarts, or redeploys. Free services also spin down after 15 minutes without traffic and can take about a minute to start again. This setup is for a temporary demo; the local SQLite database and existing uploads remain on this computer.

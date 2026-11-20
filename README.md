@@ -169,12 +169,12 @@ civicfix/
 
 ## 👥 Demo Accounts
 
-The application includes pre-configured demo credentials initialized automatically on startup via `app/seed.py`:
+The application seeds a citizen demonstration account automatically. It creates the administrator account only when `CIVICFIX_ADMIN_PASSWORD` is set in the environment; choose a unique, strong value and keep it out of source control.
 
 | Role | Email Address | Password | Privileges |
 | :--- | :--- | :--- | :--- |
 | **Citizen** | `citizen@civicfix.demo` | `Citizen@123` | File complaints, view own grievances, give star feedback |
-| **Admin** | `admin@civicfix.demo` | `Admin@123` | Assign departments, update statuses, upload resolutions, view analytics |
+| **Admin** | `admin@civicfix.demo` | Set `CIVICFIX_ADMIN_PASSWORD` | Assign departments, update statuses, upload resolutions, view analytics |
 
 > 💡 **Tip:** You can also register a brand new citizen account through the **Register** link on the navigation bar.
 
@@ -270,3 +270,7 @@ CivicFix maps 11 civic issue classifications directly to their corresponding urb
 
 This project is created strictly for **academic and educational purposes** under the Engineering Idea Lab curriculum.  
 All rights reserved © 2026 CivicFix Team.
+
+## Render deployment
+
+Use render.yaml to deploy the paid Python web service with a persistent disk mounted at /var/data. SQLite and uploaded images are stored on that disk, Render generates the Flask secret key, and Render prompts you to set CIVICFIX_ADMIN_PASSWORD. The new service starts with a fresh database; the local SQLite database and existing uploads remain on this computer.

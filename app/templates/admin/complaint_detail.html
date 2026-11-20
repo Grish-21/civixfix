@@ -172,14 +172,14 @@
                 </div>
                 <div class="card-body pt-0">
                     <div class="text-center">
-                        <a href="{{ url_for('static', filename='uploads/complaints/' + complaint.image_filename) }}" target="_blank">
-                            <img src="{{ url_for('static', filename='uploads/complaints/' + complaint.image_filename) }}"
+                        <a href="{{ url_for('uploaded_file', category='complaints', filename=complaint.image_filename) }}" target="_blank">
+                            <img src="{{ url_for('uploaded_file', category='complaints', filename=complaint.image_filename) }}"
                                  alt="Complaint Photo"
                                  class="img-fluid rounded border shadow-sm"
                                  style="max-height: 400px; object-fit: contain;">
                         </a>
                         <div class="mt-2">
-                            <a href="{{ url_for('static', filename='uploads/complaints/' + complaint.image_filename) }}" target="_blank" class="btn btn-sm btn-outline-secondary">
+                            <a href="{{ url_for('uploaded_file', category='complaints', filename=complaint.image_filename) }}" target="_blank" class="btn btn-sm btn-outline-secondary">
                                 <i class="fa-solid fa-arrow-up-right-from-square me-1"></i> View Full Image
                             </a>
                         </div>
@@ -215,14 +215,14 @@
                     <div>
                         <label class="text-muted small fw-semibold text-uppercase d-block mb-2">Resolution Proof Photo</label>
                         <div class="text-center">
-                            <a href="{{ url_for('static', filename='uploads/resolutions/' + complaint.resolution.resolution_image) }}" target="_blank">
-                                <img src="{{ url_for('static', filename='uploads/resolutions/' + complaint.resolution.resolution_image) }}"
+                            <a href="{{ url_for('uploaded_file', category='resolutions', filename=complaint.resolution.resolution_image) }}" target="_blank">
+                                <img src="{{ url_for('uploaded_file', category='resolutions', filename=complaint.resolution.resolution_image) }}"
                                      alt="Resolution Proof"
                                      class="img-fluid rounded border shadow-sm"
                                      style="max-height: 350px; object-fit: contain;">
                             </a>
                             <div class="mt-2">
-                                <a href="{{ url_for('static', filename='uploads/resolutions/' + complaint.resolution.resolution_image) }}" target="_blank" class="btn btn-sm btn-outline-success">
+                                <a href="{{ url_for('uploaded_file', category='resolutions', filename=complaint.resolution.resolution_image) }}" target="_blank" class="btn btn-sm btn-outline-success">
                                     <i class="fa-solid fa-arrow-up-right-from-square me-1"></i> View Full Proof Image
                                 </a>
                             </div>

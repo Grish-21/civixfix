@@ -4,6 +4,8 @@ Creates demo accounts and default departments when the database is first initial
 Run automatically from the app factory; safe to call repeatedly (idempotent).
 """
 
+import os
+
 from app.extensions import db
 from app.models import User, Department, CATEGORY_DEPARTMENT_MAP
 
@@ -58,8 +60,12 @@ def _seed_demo_users():
         citizen.set_password('Citizen@123')
         db.session.add(citizen)
 
-    # Demo Admin
-    if not User.query.filter_by(email='admin@civicfix.demo').first():
+    # Create the admin only when an operator supplies a password through the
+    # environment. This avoids publishing a predictable administrator login.
+    admin_password = os.environ.get('CIVICFIX_ADMIN_PASSWORD')
+    if admin_password and not User.query.filter_by(
+        email='admin@civicfix.demo'
+    ).first():
         admin = User(
             full_name='Demo Admin',
             email='admin@civicfix.demo',
@@ -68,5 +74,5 @@ def _seed_demo_users():
             role='admin',
             is_active=True,
         )
-        admin.set_password('Admin@123')
+        admin.set_password(admin_password)
         db.session.add(admin)

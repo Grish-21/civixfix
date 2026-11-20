@@ -1,0 +1,22 @@
+services:
+  - type: web
+    name: civicfix
+    runtime: python
+    plan: 0.5c-512mb
+    region: singapore
+    branch: main
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn run:app --bind 0.0.0.0:$PORT
+    envVars:
+      - key: CIVICFIX_SECRET_KEY
+        generateValue: true
+      - key: CIVICFIX_DATA_DIR
+        value: /var/data
+      - key: CIVICFIX_UPLOAD_DIR
+        value: /var/data/uploads
+      - key: CIVICFIX_ADMIN_PASSWORD
+        sync: false
+    disk:
+      name: civicfix-storage
+      mountPath: /var/data
+      sizeGB: 1

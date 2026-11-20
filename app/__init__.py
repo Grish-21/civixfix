@@ -4,7 +4,7 @@ Creates and configures the Flask application instance.
 """
 
 import os
-from flask import Flask, render_template
+from flask import Flask, abort, render_template, send_from_directory
 from config import Config
 
 
@@ -14,10 +14,11 @@ def create_app(config_class=Config):
     app = Flask(__name__)
     app.config.from_object(config_class)
 
-    # Ensure required directories exist
-    os.makedirs(app.config.get('COMPLAINT_UPLOAD_FOLDER', 'uploads'), exist_ok=True)
-    os.makedirs(app.config.get('RESOLUTION_UPLOAD_FOLDER', 'uploads'), exist_ok=True)
-    os.makedirs(os.path.join(app.instance_path), exist_ok=True)
+    # Ensure persistent data, upload, and instance directories exist.
+    os.makedirs(app.config['DATA_DIR'], exist_ok=True)
+    os.makedirs(app.config['COMPLAINT_UPLOAD_FOLDER'], exist_ok=True)
+    os.makedirs(app.config['RESOLUTION_UPLOAD_FOLDER'], exist_ok=True)
+    os.makedirs(app.instance_path, exist_ok=True)
 
     # ── Initialise extensions ─────────────────────────────────────────
     from app.extensions import db, login_manager, csrf
@@ -45,6 +46,17 @@ def create_app(config_class=Config):
     app.register_blueprint(citizen_bp)
     app.register_blueprint(admin_bp)
     app.register_blueprint(complaints_bp)
+
+    @app.route('/uploads/<category>/<path:filename>')
+    def uploaded_file(category, filename):
+        """Serve complaint and resolution images from configured storage."""
+        if category == 'complaints':
+            directory = app.config['COMPLAINT_UPLOAD_FOLDER']
+        elif category == 'resolutions':
+            directory = app.config['RESOLUTION_UPLOAD_FOLDER']
+        else:
+            abort(404)
+        return send_from_directory(directory, filename)
 
     # ── Error handlers ────────────────────────────────────────────────
     @app.errorhandler(403)
